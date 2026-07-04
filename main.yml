@@ -1,0 +1,27 @@
+---
+- hosts: solr
+  become: true
+  vars_files:
+    - vars.yml
+  pre_tasks:
+    - name: Update APT cache
+      apt:
+        update-cache: true
+        cache_valid_time: 3600
+      when: ansible_os_family == "Debian"
+  handlers:
+    - name: Restart Solr
+      service:
+        name: solr
+        state: restarted
+  tasks:
+    - name: Install Java for Debian
+      package:
+        name: openjdk-8-jdk
+        state: present
+      when: ansible_os_family == "Debian"     
+    - name: Install Java for RedHat
+      package:
+        name: java-1.8.0-openjdk-devel 
+        state: present
+      when: ansible_os_family == "RedHat"
